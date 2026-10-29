@@ -1,0 +1,53 @@
+{
+    "name": "llm-studies",
+    "build": {
+        "dockerfile": "Dockerfile",
+        "context": "."
+    },
+    "workspaceFolder": "/llm-studies",
+    "workspaceMount": "source=${localWorkspaceFolder},target=/llm-studies,type=bind,consistency=cached",
+    "mounts": [
+        "source=llm-studies-claude,target=/home/dev/.claude,type=volume",
+        "source=llm-studies-hf-cache,target=/home/dev/.cache/huggingface,type=volume",
+        "source=llm-studies-uv-cache,target=/home/dev/.cache/uv,type=volume",
+        "source=${localEnv:HOME}/.ssh,target=/home/dev/.ssh-host,type=bind,readonly"
+    ],
+    "containerEnv": {
+        "CLAUDE_CONFIG_DIR": "/home/dev/.claude",
+        "HF_HOME": "/home/dev/.cache/huggingface",
+        "UV_CACHE_DIR": "/home/dev/.cache/uv"
+    },
+    "postCreateCommand": "bash .devcontainer/post-create.sh",
+    "customizations": {
+        "vscode": {
+            "extensions": [
+                "anthropic.claude-code",
+                "ms-python.python",
+                "ms-python.vscode-pylance",
+                "ms-python.debugpy",
+                "charliermarsh.ruff",
+                "njpwerner.autodocstring",
+                "ms-toolsai.jupyter"
+            ],
+            "settings": {
+                "python.defaultInterpreterPath": "/llm-studies/.venv/bin/python",
+                "python.terminal.activateEnvironment": true,
+                "terminal.integrated.defaultProfile.linux": "bash",
+                "editor.inlineSuggest.enabled": true,
+                "python.analysis.typeCheckingMode": "standard",
+                "[python]": {
+                    "editor.formatOnSave": true,
+                    "editor.codeActionsOnSave": {
+                        "source.fixAll.ruff": "explicit",
+                        "source.organizeImports.ruff": "explicit"
+                    }
+                }
+            }
+        }
+    },
+    "remoteUser": "dev",
+    "runArgs": [
+        "--gpus=all",
+        "--ipc=host"
+    ]
+}

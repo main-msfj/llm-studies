@@ -1,0 +1,57 @@
+[project]
+name = "llm-studies"
+version = "0.1.0"
+description = "LLM studies: pre-training, post-training and alignment with PyTorch"
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "torch>=2.2.2",
+    "jupyterlab>=4.0",
+    "tiktoken>=0.5.1",
+    "matplotlib>=3.7.1",
+    "tqdm>=4.66.1",
+    "numpy>=1.26",
+    "pandas>=2.2.1",
+]
+
+[dependency-groups]
+dev = [
+    "pytest>=8.0",
+    "ruff>=0.8",
+]
+# Extras used by the book's bonus material
+book = [
+    "tokenizers>=0.21.1",
+    "safetensors>=0.6.2",
+    "huggingface_hub>=0.34.4",
+    "sentencepiece>=0.1.99",
+    "scikit-learn>=1.3.1",
+    "ipywidgets>=8.1.2",
+]
+# Post-training (SFT, DPO, GRPO, LoRA)
+train = [
+    "transformers",
+    "datasets",
+    "accelerate",
+    "peft",
+    "trl",
+]
+
+[tool.uv]
+default-groups = ["dev"]
+
+[tool.uv.sources]
+torch = { index = "pytorch-cu128" }
+
+[[tool.uv.index]]
+name = "pytorch-cu128"
+url = "https://download.pytorch.org/whl/cu128"
+explicit = true
+
+[tool.ruff]
+line-length = 140
+exclude = [".venv"]
+
+[tool.ruff.lint]
+select = ["E4", "E7", "E9", "F", "I"]
+ignore = ["E226", "E402", "E702", "E703", "E722", "E731", "E741"]
