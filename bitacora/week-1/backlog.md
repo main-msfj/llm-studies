@@ -1,3 +1,5 @@
+# This is the backlog from 29/10/2026-08/11/2026
+
 # (10-29-2026) Environment
 
 I watched the video on environment setup and built the dev container for this project.
@@ -38,3 +40,21 @@ I watched [this video](https://youtu.be/341Rb8fJxY0) on tokenization, embeddings
 
 ## Pending 
  - Code 
+
+# (10-31-2026) Positional Enconding 
+
+I Learned the differences in between positional encoding from Attention is all you need 
+and GPT2 Implementation , I clearly Understand now the benefit of Positional Enconding 
+in Attention is all you need the values are set by the formula, in constrant
+in gpt2 are sum into the positional vector this make them traininable 
+now i understand that each vector is move in the space but always close to the original 
+vector space , this allow the transformer to move the embedding vector to define better 
+meaning and position 
+
+## Technical debt
+- None 
+
+## Pending 
+- Do the Positonal Encoding in Pytorch , also understand what are the best
+pracice for embedding_dimension, stride , and batches 
+as this affect the training and LLm performance 
