@@ -58,3 +58,15 @@ meaning and position
 - Do the Positonal Encoding in Pytorch , also understand what are the best
 pracice for embedding_dimension, stride , and batches 
 as this affect the training and LLm performance 
+
+## update 
+- On stride: it is the step between the start of consecutive windows.
+  * `stride = max_length`: no overlap, so each token appears once per epoch.
+    A good default when the dataset is large.
+  * `stride < max_length`: windows overlap, so we get more samples from the same
+    text, but they are highly correlated (the model sees the same tokens many
+    times). Useful for small datasets, with a higher risk of overfitting.
+  * `stride > max_length`: skips tokens, so data is lost. Avoid it.
+- On batch size: it is limited mainly by GPU memory. It also changes training:
+  small batches give noisier gradients, large batches give smoother ones
+  (and usually need a different learning rate).
