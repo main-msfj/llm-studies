@@ -1,0 +1,13 @@
+{
+  "id": "megr25/llm-studies-gpt2",
+  "title": "llm-studies-gpt2",
+  "code_file": "GPT2.ipynb",
+  "language": "python",
+  "kernel_type": "notebook",
+  "is_private": true,
+  "enable_gpu": true,
+  "enable_internet": true,
+  "dataset_sources": ["arghadeeppakhira/125m-llm-dataset"],
+  "competition_sources": [],
+  "kernel_sources": []
+}

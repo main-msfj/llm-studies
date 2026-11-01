@@ -70,3 +70,17 @@ as this affect the training and LLm performance
 - On batch size: it is limited mainly by GPU memory. It also changes training:
   small batches give noisier gradients, large batches give smoother ones
   (and usually need a different learning rate).
+
+# (11-01-2026) Neural Network
+
+I re-studied the perceptron and activation functions. I first built a single
+perceptron by hand, then used `nn.Sequential` to build a neural network and
+trained it on a toy dataset.
+
+## Quick wins
+- I connected the project to Kaggle so I can train on its GPUs later.
+- The CI pipeline is already working.
+
+## Pending
+- Implement micrograd from Andrej Karpathy. I understand the concept and the
+  code structure, but I still need to write my own version.

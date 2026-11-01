@@ -1,3 +1,3 @@
-from .base import GPTDataset, create_dataloader
+from .base import GPTDataset, ToyDataset, create_dataloader
 
-__all__ = ["GPTDataset", "create_dataloader"]
+__all__ = ["GPTDataset", "ToyDataset", "create_dataloader"]
