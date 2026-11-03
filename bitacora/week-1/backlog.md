@@ -84,3 +84,7 @@ trained it on a toy dataset.
 ## Pending
 - Implement micrograd from Andrej Karpathy. I understand the concept and the
   code structure, but I still need to write my own version.
+
+# (11-02-2026 | 11-03-2026) 
+I continue in understanding | refreshing the math behind NN 
+and aso build micrograd from scrath , i need to finish the entire video and implement the Code (I am doing now )
