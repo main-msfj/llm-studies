@@ -88,3 +88,8 @@ trained it on a toy dataset.
 # (11-02-2026 | 11-03-2026) 
 I continue in understanding | refreshing the math behind NN 
 and aso build micrograd from scrath , i need to finish the entire video and implement the Code (I am doing now )
+
+# (11-04-2026 ~  11-06-2026)
+I continue with Andrej Karpathy
+but now i understand the back propagation in detail chain rules 
+and refresh some moew concepts 
