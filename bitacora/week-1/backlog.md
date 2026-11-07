@@ -93,3 +93,8 @@ and aso build micrograd from scrath , i need to finish the entire video and impl
 I continue with Andrej Karpathy
 but now i understand the back propagation in detail chain rules 
 and refresh some moew concepts 
+
+# (11-07-2026)
+I continue with micrograd my understading now is better
+now i inderstand the bases of pytorch forward and backword
+I also refresh my understanding of derivative and other concept

@@ -53,9 +53,29 @@ class Value:
         out._backward = _backward
         return out
 
+    def backward(self):
+
+        # Topological order
+        topo: list[Value] = []
+        visited = set()
+
+        def build_topo(v: Value) -> None:
+            if v not in visited:
+                visited.add(v)
+                for child in v._prev:
+                    build_topo(child)
+                topo.append(v)
+
+        # build top
+        build_topo(self)
+
+        # Iterate through all node
+        self.grad = 1
+        for v in reversed(topo):
+            v._backward()
+
     def tanh(self):
-        x = self.data
-        t = (math.exp(2 * x) - 1) / (math.exp(2 * x) + 1)
+        t = math.tanh(self.data)
         out = Value(t, (self,), "tanh")
 
         def _backward():
@@ -63,6 +83,48 @@ class Value:
 
         out._backward = _backward
         return out
+
+    def exp(self):
+        x = self.data
+        out = Value(math.exp(x), (self,), "exp")
+
+        # d/dx(e^x) = e^x
+        def _backward():
+            self.grad += out.data * out.grad
+
+        out._backward = _backward
+        return out
+
+    # Extra funcions
+    def __rmul__(self, other):  # rever multiplication
+        # a.__mul__(int) where x is number
+        # this help python to check if the object is able to multiply
+        # with the value
+        return self * other
+
+    def __pow__(self, other):
+        assert isinstance(other, (int, float)), "only supporting int/float powers for now"
+        out = Value(self.data**other, (self,), f"**{other}")
+
+        # The derivative of the power x^n is given by
+        # d/(d x)(x^n) = n x^(n - 1).
+        def _backward():
+            self.grad += other * (self.data ** (other - 1)) * out.grad
+
+        out._backward = _backward
+        return out
+
+    def __truediv__(self, other):
+        return self * other**-1  # __pow__ y después __mul__
+
+    def __neg__(self):  # -self
+        return self * -1
+
+    def __sub__(self, other):  # self - other
+        return self + (-other)
+
+    def __repr__(self) -> str:
+        return f"Value(label={self.label}, data={self.data}, grad={self.grad})"
 
 
 class NnGraph:
