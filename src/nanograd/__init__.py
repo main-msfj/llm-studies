@@ -1,3 +1,3 @@
-from .engine import NnGraph, Value
+from .engine import MLP, Layer, Neuron, NnGraph, Value
 
-__all__ = ["NnGraph", "Value"]
+__all__ = ["Layer", "MLP", "Neuron", "NnGraph", "Value"]
