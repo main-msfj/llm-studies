@@ -98,3 +98,9 @@ and refresh some moew concepts
 I continue with micrograd my understading now is better
 now i inderstand the bases of pytorch forward and backword
 I also refresh my understanding of derivative and other concept
+
+# 11-08-2026
+I fibished nano grad 
+
+Pending the google colab excersie and perhaps the batches, but new info 
+has came out it sem to be the plan done by llm has some inconsistencies

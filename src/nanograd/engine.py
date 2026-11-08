@@ -94,6 +94,20 @@ class Value:
         out._backward = _backward
         return out
 
+    def relu(self):
+        out = Value(0 if self.data < 0 else self.data, (self,), "ReLU")
+
+        # ReLU(x) = max(0, x)
+        # d/dx(ReLU(x)) = 0  if x < 0
+        #                 1  if x > 0
+        #                 undefined at x = 0 (we use 0, like PyTorch)
+        def _backward():
+            self.grad += (out.data > 0) * out.grad
+
+        out._backward = _backward
+
+        return out
+
     def exp(self):
         x = self.data
         out = Value(math.exp(x), (self,), "exp")
@@ -126,8 +140,11 @@ class Value:
         out._backward = _backward
         return out
 
-    def __truediv__(self, other):
+    def __truediv__(self, other):  # self / other
         return self * other**-1  # __pow__ then __mul__
+
+    def __rtruediv__(self, other):  # other / self
+        return other * self**-1
 
     def __neg__(self):  # -self
         return self * -1
