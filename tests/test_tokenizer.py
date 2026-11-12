@@ -1,8 +1,37 @@
 """Tests for the dataset and dataloader in src.tokenizer."""
 
+import pytest
 import torch
 
-from src.tokenizer import GPTDataset, ToyDataset, create_dataloader
+from src.tokenizer import (
+    GPTDataset,
+    SimpleTokenizerV1,
+    SimpleTokenizerV2,
+    ToyDataset,
+    create_dataloader,
+)
+
+VOCAB = {",": 0, ".": 1, "Hello": 2, "world": 3, "<|endoftext|>": 4, "<|unk|>": 5}
+
+
+def test_v1_encode_decode_rountrip():
+    tok = SimpleTokenizerV1(VOCAB)
+    ids = tok.encode("Hello, world.")
+    assert ids == [2, 0, 3, 1]
+    assert tok.decode(ids) == "Hello, world."
+
+
+def test_v1_unknown_word_raises_keyerror():
+    tok = SimpleTokenizerV1(VOCAB)
+    with pytest.raises(KeyError, match="Bye"):
+        tok.encode("Hello Bye")
+
+
+def test_v2_unknown_word_becomes_unk():
+    tok = SimpleTokenizerV2(VOCAB)
+    ids = tok.encode("Hello, Bye.")
+    assert ids == [2, 0, 5, 1]
+    assert tok.decode(ids) == "Hello, <|unk|>."
 
 
 class CharTokenizer:

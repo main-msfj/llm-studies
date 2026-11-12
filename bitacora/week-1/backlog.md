@@ -1,14 +1,14 @@
-# This is the backlog from 29/10/2026-08/11/2026
+# Week 1 (2026-10-29 → 2026-11-08)
 
-# (10-29-2026) Environment
+## 2026-10-29 · Environment
 
 I watched the video on environment setup and built the dev container for this project.
 
-## Quick wins
+### Quick wins
 - I understand better how a devcontainer and a Dockerfile fit together.
 - The container has GPU access, a non-root user, and persistent volumes for Claude config, the Hugging Face cache and the uv cache. I also mounted my host SSH keys so I don't re-enter credentials.
 
-## Technical debt
+### Technical debt
 - I don't fully understand every Dockerfile command yet. I get the big picture (non-root user, mounted volumes), but not the details of this block:
 
 ```dockerfile
@@ -26,40 +26,37 @@ What it does, line by line:
 
 Is it worth learning in depth? Probably not. I'm not a DevOps engineer, and this block is boilerplate I can reuse as is. I only need to remember the purpose: matching UID/GID with the host so bind-mounted files stay editable. I'll revisit it only if file permissions break.
 
+## 2026-10-30 · Tokenization and embeddings
 
-# (10-30-2026) Tokenization and Embeddings
+I watched [this video](https://youtu.be/341Rb8fJxY0) on tokenization, embeddings and positional embeddings. It is essential for understanding how an LLM turns text into model input.
 
-I watched [this video](https://youtu.be/341Rb8fJxY0) on tokenization, embeddings and positional embeddings. It is essential for building and understanding how an LLM turns text into model input.
-
-## Quick wins
+### Quick wins
 - It refreshed basic concepts I already knew, and it was nice to review them.
 - My PyTorch skills were a bit rusty, but they are coming back.
 
-## Technical debt
+### Technical debt
 - None.
 
-## Pending 
- - Code 
+### Pending
+- Write the code.
 
-# (10-31-2026) Positional Enconding 
+## 2026-10-31 · Positional encoding
 
-I Learned the differences in between positional encoding from Attention is all you need 
-and GPT2 Implementation , I clearly Understand now the benefit of Positional Enconding 
-in Attention is all you need the values are set by the formula, in constrant
-in gpt2 are sum into the positional vector this make them traininable 
-now i understand that each vector is move in the space but always close to the original 
-vector space , this allow the transformer to move the embedding vector to define better 
-meaning and position 
+I learned the difference between the positional encoding in *Attention Is All You Need* and the one in GPT-2:
 
-## Technical debt
-- None 
+- **Attention Is All You Need:** the positional values are fixed, computed with a sine/cosine formula.
+- **GPT-2:** the positional vectors are learned (trainable) and added to the token embeddings.
 
-## Pending 
-- Do the Positonal Encoding in Pytorch , also understand what are the best
-pracice for embedding_dimension, stride , and batches 
-as this affect the training and LLm performance 
+Now I understand that adding the positional vector moves each token embedding in the vector space, but it stays close to its original position. This lets the transformer encode both the meaning of a token and its position.
 
-## update 
+### Technical debt
+- None.
+
+### Pending
+- Implement positional encoding in PyTorch.
+- Understand best practices for `embedding_dim`, `stride` and batch size, since they affect training and LLM performance.
+
+### Update
 - On stride: it is the step between the start of consecutive windows.
   * `stride = max_length`: no overlap, so each token appears once per epoch.
     A good default when the dataset is large.
@@ -71,36 +68,56 @@ as this affect the training and LLm performance
   small batches give noisier gradients, large batches give smoother ones
   (and usually need a different learning rate).
 
-# (11-01-2026) Neural Network
+## 2026-11-01 · Neural networks
 
 I re-studied the perceptron and activation functions. I first built a single
 perceptron by hand, then used `nn.Sequential` to build a neural network and
 trained it on a toy dataset.
 
-## Quick wins
+### Quick wins
 - I connected the project to Kaggle so I can train on its GPUs later.
 - The CI pipeline is already working.
 
-## Pending
+### Pending
 - Implement micrograd from Andrej Karpathy. I understand the concept and the
   code structure, but I still need to write my own version.
 
-# (11-02-2026 | 11-03-2026) 
-I continue in understanding | refreshing the math behind NN 
-and aso build micrograd from scrath , i need to finish the entire video and implement the Code (I am doing now )
+## 2026-11-02 → 2026-11-03 · Math behind neural networks
 
-# (11-04-2026 ~  11-06-2026)
-I continue with Andrej Karpathy
-but now i understand the back propagation in detail chain rules 
-and refresh some moew concepts 
+I kept refreshing the math behind neural networks and started building micrograd from scratch.
 
-# (11-07-2026)
-I continue with micrograd my understading now is better
-now i inderstand the bases of pytorch forward and backword
-I also refresh my understanding of derivative and other concept
+### Pending
+- Finish the whole video and implement the code (in progress).
 
-# 11-08-2026
-I fibished nano grad 
+## 2026-11-04 → 2026-11-06 · Backpropagation
 
-Pending the google colab excersie and perhaps the batches, but new info 
-has came out it sem to be the plan done by llm has some inconsistencies
+I continued with Andrej Karpathy's video. Now I understand backpropagation in detail, including the chain rule, and I refreshed other related concepts.
+
+## 2026-11-07 · micrograd
+
+I continued with micrograd and my understanding is much better now:
+
+- I understand the basics of the forward and backward pass in PyTorch.
+- I refreshed derivatives and other related concepts.
+
+## 2026-11-08 · nanograd finished
+
+I finished nanograd.
+
+
+# Week 2 (2026-11-09 → 2026-11-15)
+
+## 2026-11-12 · Tokenizer, embeddings and makemore
+
+I built the embeddings, understood them, and reorganized the week 2 notebook. I also started learning makemore and how to build a tokenizer for an LLM in a more advanced way.
+
+### Quick wins
+- Built a word-level tokenizer: `SimpleTokenizerV1` (fails on unknown words) and `SimpleTokenizerV2` (replaces them with `<|unk|>`).
+- Learned that special tokens such as `<|unk|>` and `<|endoftext|>` must be in the vocabulary. Otherwise V2 fails with `KeyError: '<|unk|>'`.
+- Reviewed how to validate arguments: `if ... raise TypeError/ValueError` for external input, `assert` only for internal invariants (it is removed with `python -O`), and `typing.Annotated` is only metadata unless a library like pydantic reads it.
+- Started makemore: counted character bigrams with `pairwise` and `Counter`, and built the count matrix `N[i, j]` in PyTorch.
+- Clarified the difference between instance methods (`self`), `@classmethod` (`cls`, e.g. alternative constructors like `from_file`) and `@staticmethod`.
+
+### Pending
+- Keep `stoi` / `itos` in the `Makemore` instance so they can be reused for plotting and sampling.
+- Continue with makemore: turn the counts into probabilities and sample names.
