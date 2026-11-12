@@ -1,5 +1,6 @@
 """Tokenizer for LLM models."""
 
+import re
 import typing as t
 
 import tiktoken
@@ -79,3 +80,57 @@ def create_dataloader(
         drop_last=drop_last,
         num_workers=num_workers,
     )
+
+
+class SimpleTokenizerV1:
+    def __init__(self, vocab: dict[str, int]) -> None:
+        self.str_to_int = self.validate_vocab(vocab)
+        self.int_to_str: dict[int, str] = {i: s for s, i in vocab.items()}
+
+    def validate_vocab(self, vocab: t.Any) -> dict[str, int]:
+        if not isinstance(vocab, dict):
+            raise ValueError("vocab must be a dictionary")
+        return vocab
+
+    def encode(self, text: str) -> list[int]:
+        # A bit mode advance split instead of ""
+        pre_processed = re.split(r'([,.:;?_!"()\']|--|\s)', text)
+        pre_processed = [i.strip() for i in pre_processed if i.strip()]
+
+        # Maaping str[str] = [A|0, B|1 .... N|n]
+        ids = [self.str_to_int[i] for i in pre_processed]
+        return ids
+
+    def decode(self, ids: list[int]) -> str:
+        """inverse decode"""
+        text = " ".join([self.int_to_str[n] for n in ids])
+        text = re.sub(r'\s+([,.?!"()\'])', r"\1", text)
+        return text
+
+    def __repr__(self) -> str:
+        return f"Voc-size: {len(self.int_to_str.keys())}"
+
+
+class SimpleTokenizerV2:
+    def __init__(self, vocab):
+        self.str_to_int = self.validate_vocab(vocab)
+        self.int_to_str: dict[int, str] = {i: s for s, i in vocab.items()}
+
+    def validate_vocab(self, vocab: t.Any) -> dict[str, int]:
+        if not isinstance(vocab, dict):
+            raise ValueError("vocab must be a dictionary")
+        return vocab
+
+    def encode(self, text):
+        pre_processed = re.split(r'([,.:;?_!"()\']|--|\s)', text)
+        pre_processed = [item.strip() for item in pre_processed if item.strip()]
+        pre_processed = [item if item in self.str_to_int else "<|unk|>" for item in pre_processed]
+
+        ids = [self.str_to_int[s] for s in pre_processed]
+        return ids
+
+    def decode(self, ids):
+        text = " ".join([self.int_to_str[i] for i in ids])
+        # Replace spaces before the specified punctuations
+        text = re.sub(r'\s+([,.:;?!"()\'])', r"\1", text)
+        return text
