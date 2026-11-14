@@ -33,3 +33,17 @@ class Makemore:
             for ch1, ch2 in pairwise(chs):
                 N[self.stoi[ch1], self.stoi[ch2]] += 1
         return N
+
+    def create_dataset(self) -> tuple[torch.Tensor, torch.Tensor]:
+        """Create Dataset xs , ys"""
+        xs: list[int] = []
+        ys: list[int] = []
+
+        for word in self.words:
+            chs = [self.SEP, *word, self.SEP]
+            for ch1, ch2 in pairwise(chs):
+                xs.append(self.stoi[ch1])
+                ys.append(self.stoi[ch2])
+
+        # Transform to tensor
+        return torch.tensor(xs), torch.tensor(ys)

@@ -119,5 +119,34 @@ I built the embeddings, understood them, and reorganized the week 2 notebook. I 
 - Clarified the difference between instance methods (`self`), `@classmethod` (`cls`, e.g. alternative constructors like `from_file`) and `@staticmethod`.
 
 ### Pending
-- Keep `stoi` / `itos` in the `Makemore` instance so they can be reused for plotting and sampling.
-- Continue with makemore: turn the counts into probabilities and sample names.
+- ~~Keep `stoi` / `itos` in the `Makemore` instance so they can be reused for plotting and sampling.~~ Done 2026-11-14.
+- ~~Continue with makemore: turn the counts into probabilities and sample names.~~ Done 2026-11-14.
+
+## 2026-11-14 · makemore part 1: from counting to a neural network
+
+I finished the first makemore video. First I built the bigram model by counting, then a one-layer neural network trained with gradient descent. Both reach the same loss (~2.45-2.48), so the network rediscovers the count table by itself.
+
+### Quick wins
+- **Sampling:** generate a name letter by letter with `torch.multinomial`, starting and ending at `.` (index 0). A seeded `torch.Generator` makes results reproducible, but only on the same PyTorch version, which is why I don't get the video's `mor. axx.`.
+- **Broadcasting:** align shapes to the right; a size-1 (or missing) dim gets stretched; otherwise sizes must match. A vector `(n,)` always behaves like a row `(1, n)`.
+  * `P / P.sum(1, keepdim=True)` normalizes rows. Without `keepdim` it silently normalizes columns, and no error is raised because `P` is square (27×27).
+  * Habit: write the aligned shapes in a comment and check a property, e.g. `assert torch.allclose(P.sum(1), torch.ones(27))`.
+  * `@` broadcasts only the batch dims; the last two follow `(n, m) @ (m, k)`.
+- **Smoothing (`N + 1`):** "never seen" ≠ "impossible". It removes zero probabilities so the loss can't become infinite (`log(0) = -inf`), and barely changes the result.
+- **Negative log likelihood:** loss = mean of `-log(prob given to the correct letter)`. Why log: it turns a product of probabilities into a sum, keeps the same optimum, punishes confident mistakes hard, and measures "surprise".
+- **Perplexity = e^loss:** 2.45 → ~11.6, i.e. the model gives the correct letter ~8.6 % on average. Uniform guessing = 27. Above 27 means *confidently wrong* (a random `W` gave ~40).
+- **The network:**
+  * Dataset: pairs `xs` (current letter) and `ys` (next letter), 228,146 examples.
+  * `one_hot @ W` just selects a row of `W`. `W` has shape `(inputs, outputs)`, `(27, 27)` here; its shape doesn't depend on the number of examples.
+  * `logits.exp()` = "counts" (equivalent to `N`), and exp + normalize = softmax. `exp` keeps the order and is never 0.
+  * No bias: with one-hot input, `W[ix] + b` can be absorbed into `W`. Verified by experiment: same loss with and without bias.
+  * Learning rate 50: gradients here are tiny (~0.002), so a large step is needed. Tested 0.1 / 1 / 10 / 50 / 200; 50 worked best.
+  * Compare models by loss, not by a few sampled names.
+- **Python:** `torch.tensor` (function, creates data) vs `torch.Tensor` (class, for type hints); `tuple[A, B]` vs `list[A]`; `k + 1 // 5` is `k + 0` (precedence), use `(k + 1) % 5 == 0`.
+
+### Technical debt
+- Index tricks like `torch.bincount(xs * 27 + ys)` are still hard for me. I keep the explicit loop for now; understanding comes first.
+
+### Pending
+- makemore part 2 (MLP): character embeddings, a hidden layer with `tanh`, and a context of 3 letters.
+- Use `F.cross_entropy` instead of writing exp → normalize → log by hand.
